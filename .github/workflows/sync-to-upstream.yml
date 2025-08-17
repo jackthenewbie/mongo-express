@@ -1,0 +1,24 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+    # Runs daily at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allows manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest # Or any other runner you prefer
+
+    steps:
+    - name: Sync Fork with Upstream Action
+      # This 'uses' the full URL to your composite action in the other repository.
+      # The '@main' specifies that you want to use the version from the 'main' branch.
+      uses: https://github.com/jackthenewbie/gitea-action-composite/tree/main/.gitea/actions/sync-upstream@main
+      with:
+        # Provide the required inputs for the action
+        token: ${{ secrets.TOKEN }} # A secret containing a token with push access
+        upstream_repo_url: 'https://github.com/mongo-express/mongo-express.git'
+        target_branch: 'master' # Optional, defaults to 'main'
+        upstream_branch: 'master' # Optional, defaults to 'main'
