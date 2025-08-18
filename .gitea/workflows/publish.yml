@@ -1,0 +1,36 @@
+# .gitea/workflows/build.yaml
+name: Publish docker image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Defines environment variables for the workflow.
+env:
+  REGISTRY: vcs.decoyer.win
+  IMAGE_NAME: ${{ gitea.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ser3.local.host
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        # This step is crucial so the reusable action can access your Dockerfile and code.
+        uses: https://github.com/actions/checkout@main
+
+      - name: Build and Push with Reusable Action
+        # This calls the local reusable action you created above.
+        uses: https://github.com/jackthenewbie/gitea-action-composite/.gitea/actions/publish@main
+        with:
+          registry: ${{ env.REGISTRY }}
+          image_name: ${{ env.IMAGE_NAME }}
+          username: ${{ gitea.actor }}
+          password: ${{ secrets.VCS_TOKEN }}
